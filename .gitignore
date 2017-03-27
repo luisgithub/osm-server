@@ -1,0 +1,16 @@
+#IDE Eclipse files 
+.classpath
+.mvn/
+.project
+.settings/
+.springBeans
+mvnw
+mvnw.cmd
+target/
+#IDE InteliJ files
+*.iml
+/.idea
+#log file
+*.log
+#properties
+/src/main/resources/application.properties
