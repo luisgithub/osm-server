@@ -22,8 +22,10 @@ public class Domicilio  implements Serializable{
     private String noExterior;
     private String estado;
     private String municipio;
+    private String localidad;
+    private String pais;
     private String codigoPostal;
-    private String entre;
+    private String referencia;
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "cliente")
@@ -69,12 +71,12 @@ public class Domicilio  implements Serializable{
         this.codigoPostal = codigoPostal;
     }
 
-    public String getEntre() {
-        return entre;
+    public String getReferencia() {
+        return referencia;
     }
 
-    public void setEntre(String entre) {
-        this.entre = entre;
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
     }
 
     public String getEstado() {
@@ -107,5 +109,21 @@ public class Domicilio  implements Serializable{
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public String getLocalidad() {
+        return localidad;
+    }
+
+    public void setLocalidad(String localidad) {
+        this.localidad = localidad;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
     }
 }

@@ -110,4 +110,8 @@ public class Cliente {
 	public void setDomicilios(Collection<Domicilio> domicilios) {
 		this.domicilios = domicilios;
 	}
+
+	public void addDomicilio(Domicilio domicilio){
+		this.domicilios.add(domicilio);
+	}
 }

@@ -4,6 +4,7 @@ import com.erpsom.domain.*;
 import com.erpsom.domain.json.ComprobanteInfo;
 import com.erpsom.repository.*;
 import mx.bigdata.sat.cfdi.v32.schema.Comprobante;
+import mx.bigdata.sat.cfdi.v32.schema.TUbicacion;
 import mx.bigdata.sat.cfdi.v32.schema.TUbicacionFiscal;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class VentaService {
 
     @Autowired
     ClienteRepository clienteRepository;
+
+    @Autowired
+    DomicilioRepository domicilioRepository;
 
     public Comprobante crateComprobante(Venta venta){
         Comprobante comprobante = new Comprobante();
@@ -70,7 +74,17 @@ public class VentaService {
         Cliente cliente = clienteRepository.findOne(venta.getCliente().getId());
         receptor.setNombre(cliente.getNombreCompleto());
         receptor.setRfc(cliente.getRfc());
-        TUbicacionFiscal receptorUbicacionFiscal = new TUbicacionFiscal();
+        TUbicacion receptorUbicacionFiscal = new TUbicacion();
+        Domicilio domicilioCliente = domicilioRepository.findOne(venta.getDomicilioCliente().getId());
+        receptorUbicacionFiscal.setCalle(domicilioCliente.getCalle());
+        receptorUbicacionFiscal.setNoExterior(domicilioCliente.getNoExterior());
+        receptorUbicacionFiscal.setNoInterior(domicilioCliente.getNoInterior());
+        receptorUbicacionFiscal.setEstado(domicilioCliente.getEstado());
+        receptorUbicacionFiscal.setPais(domicilioCliente.getPais());
+        receptorUbicacionFiscal.setColonia(domicilioCliente.getColonia());
+        receptorUbicacionFiscal.setCodigoPostal(domicilioCliente.getCodigoPostal());
+        receptorUbicacionFiscal.setReferencia(domicilioCliente.getReferencia());
+        receptor.setDomicilio(receptorUbicacionFiscal);
 
         try {
             ComprobanteInfo comprobanteInfo = new ComprobanteInfo();

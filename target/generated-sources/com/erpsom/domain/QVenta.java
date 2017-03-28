@@ -26,6 +26,8 @@ public class QVenta extends EntityPathBase<Venta> {
 
     public final NumberPath<java.math.BigDecimal> descuento = createNumber("descuento", java.math.BigDecimal.class);
 
+    public final QDomicilio domicilioCliente;
+
     public final StringPath estado = createString("estado");
 
     public final DateTimePath<java.util.Date> fecha = createDateTime("fecha", java.util.Date.class);
@@ -65,6 +67,7 @@ public class QVenta extends EntityPathBase<Venta> {
     public QVenta(Class<? extends Venta> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.cliente = inits.isInitialized("cliente") ? new QCliente(forProperty("cliente")) : null;
+        this.domicilioCliente = inits.isInitialized("domicilioCliente") ? new QDomicilio(forProperty("domicilioCliente"), inits.get("domicilioCliente")) : null;
         this.sucursal = inits.isInitialized("sucursal") ? new QSucursal(forProperty("sucursal"), inits.get("sucursal")) : null;
     }
 

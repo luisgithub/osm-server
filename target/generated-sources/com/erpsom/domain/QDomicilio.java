@@ -30,17 +30,21 @@ public class QDomicilio extends EntityPathBase<Domicilio> {
 
     public final StringPath colonia = createString("colonia");
 
-    public final StringPath entre = createString("entre");
-
     public final StringPath estado = createString("estado");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final StringPath localidad = createString("localidad");
 
     public final StringPath municipio = createString("municipio");
 
     public final StringPath noExterior = createString("noExterior");
 
     public final StringPath noInterior = createString("noInterior");
+
+    public final StringPath pais = createString("pais");
+
+    public final StringPath referencia = createString("referencia");
 
     public QDomicilio(String variable) {
         this(Domicilio.class, forVariable(variable), INITS);

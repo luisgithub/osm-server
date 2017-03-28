@@ -24,6 +24,9 @@ public class Venta implements Serializable{
     @ManyToOne
     @JoinColumn(name = "cliente", referencedColumnName = "id")
     private Cliente cliente = null;
+    @ManyToOne
+    @JoinColumn(name = "domicilio_cliente", referencedColumnName = "id")
+    private Domicilio domicilioCliente;
     private BigDecimal descuento;
     private BigDecimal subtotal;
     private BigDecimal iva;
@@ -131,5 +134,13 @@ public class Venta implements Serializable{
 
     public void setSucursal(Sucursal sucursal) {
         this.sucursal = sucursal;
+    }
+
+    public Domicilio getDomicilioCliente() {
+        return domicilioCliente;
+    }
+
+    public void setDomicilioCliente(Domicilio domicilioCliente) {
+        this.domicilioCliente = domicilioCliente;
     }
 }
