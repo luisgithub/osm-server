@@ -1,88 +1,61 @@
 package com.erpsom.domain.json;
 
-import java.util.Date;
+import mx.bigdata.sat.cfdi.v32.schema.Comprobante;
 
 /**
  * Created by HMO SmartClinic Ninja Development Team on 3/16/17.
  */
 public class ComprobanteInfo {
-    private String version;
-    private String noCertificado;
-    private String metodoPago;
-    private String folio;
-    private Date fecha;
+    private Comprobante comprobante;
+//    private String version;
+//    private String noCertificado;
+//    private String metodoPago;
+//    private String folio;
+//    private Date fecha;
+//    private String certificado;
+//    private String numCtaCertificado;
+//    private String tipoComprobante;
+//    private String formaDePago;
+//    private String lugarDeExpedicion;
+//    private String emisorNombre;
+//    private String emisorRfc;
+//    private String emisorRegimen;
+//    private String emisorCalle;
+//    private String emisorColonia;
+//    private String emisorCodigoPostal;
+//    private String emisorEstado;
+//    private String emisorLocalidad;
+//    private String emisorReferencia;
+//    private String emisorMunicipio;
+//    private String emisorNoExterior;
+//    private String emisorNoInterior;
+//    private String emisorPais;
+//    private String receptorNombre;
+//    private String receptorRfc;
+//    private String receptorCalle;
+//    private String receptorColonia;
+//    private String receptorCodigoPostal;
+//    private String receptorEstado;
+//    private String receptorMunicipio;
+//    private String receptorLocalidad;
+//    private String receptorPais;
+//    private String receptorReferencia;
+//    private List<ConceptoVenta> conceptoVentaList;
+//    private String impuestoNombre;
+//    private String impuestoTasa;
+//    private BigDecimal impuestoImporte;
+//    private BigDecimal subtotal;
+//    private BigDecimal descuento;
+//    private BigDecimal total;
 
     public ComprobanteInfo() {
     }
 
-    public String getVersion() {
-        return version;
+    public Comprobante getComprobante() {
+        return comprobante;
     }
 
-    public void setVersion(String version) {
-        this.version = version;
+    public void setComprobante(Comprobante comprobante) {
+        this.comprobante = comprobante;
     }
-
-    public String getNoCertificado() {
-        return noCertificado;
-    }
-
-    public void setNoCertificado(String noCertificado) {
-        this.noCertificado = noCertificado;
-    }
-
-    public String getMetodoPago() {
-        return metodoPago;
-    }
-
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
-
-    public String getFolio() {
-        return folio;
-    }
-
-    public void setFolio(String folio) {
-        this.folio = folio;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ComprobanteInfo comprobanteInfo = (ComprobanteInfo) o;
-
-        if (version != comprobanteInfo.version) return false;
-        if (noCertificado != null ? !noCertificado.equals(comprobanteInfo.noCertificado) : comprobanteInfo.noCertificado != null) return false;
-        return !(folio != null ? !folio.equals(comprobanteInfo.folio) : comprobanteInfo.folio != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = folio != null ? folio.hashCode() : 0;
-        result = 31 * result + Integer.valueOf(version);
-        result = 31 * result + (noCertificado != null ? noCertificado.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "comprobanteInfo{" +
-                "version='" + version + '\'' +
-                ", folio=" + folio +
-                ", noCertificado='" + noCertificado + '\'' +
-                '}';
-    }
-
 }
