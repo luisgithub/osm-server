@@ -3,21 +3,30 @@ package com.erpsom.service;
 import com.erpsom.domain.*;
 import com.erpsom.domain.json.ComprobanteInfo;
 import com.erpsom.repository.*;
-import mx.bigdata.sat.cfdi.v32.schema.Comprobante;
-import mx.bigdata.sat.cfdi.v32.schema.ObjectFactory;
-import mx.bigdata.sat.cfdi.v32.schema.TUbicacion;
-import mx.bigdata.sat.cfdi.v32.schema.TUbicacionFiscal;
+import mx.bigdata.sat.cfdi.CFDv32;
+import mx.bigdata.sat.cfdi.v32.schema.*;
+import mx.bigdata.sat.security.KeyLoaderEnumeration;
+import mx.bigdata.sat.security.factory.KeyLoaderFactory;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @Transactional
 public class VentaService {
+
+    static final Logger logger = LogManager.getLogger(VentaService.class.getName());
 
     @Autowired
     ComprobanteRepository comprobanteRepository;
@@ -40,12 +49,45 @@ public class VentaService {
     @Autowired
     DomicilioRepository domicilioRepository;
 
-    public Comprobante crateComprobante(Venta venta){
+    @Value("${osm.cfd.cerfile}")
+    private String cerFile;
+
+    @Value("${osm.cfd.keyfile}")
+    private String keyFile;
+
+    @Value("${osm.cfd.keypass}")
+    private String keypass;
+
+    public void crearCFD(Venta venta) {
+        try {
+            PrivateKey key = null;
+            key = KeyLoaderFactory.createInstance(KeyLoaderEnumeration.PRIVATE_KEY_LOADER, new FileInputStream("/home/luis/workspace/osm-server/src/main/resources/FIEL/CSD01_AAA010101AAA.key"), keypass).getKey();
+
+            X509Certificate cert = KeyLoaderFactory.createInstance(
+                    KeyLoaderEnumeration.PUBLIC_KEY_LOADER,
+                    new FileInputStream(cerFile)
+            ).getKey();
+            CFDv32 cfdi = new CFDv32(createComprobante(venta), "mx.bigdata.sat.cfdi.examples");
+            cfdi.addNamespace("http://www.bigdata.mx/cfdi/example", "example");
+
+
+            mx.bigdata.sat.cfdi.v32.schema.Comprobante sellado = cfdi.sellarComprobante(key,cert);
+            System.err.println(sellado.getSello());
+            cfdi.validar();
+            cfdi.verificar();
+            cfdi.guardar(System.out);
+        }catch(Exception ex){
+            logger.debug(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public Comprobante createComprobante(Venta venta){
 
         ObjectFactory objectFactory = new ObjectFactory();
 
         Comprobante comprobante = objectFactory.createComprobante();
-        //Comprobante
+        //ComprobanteFiscal
         comprobante.setVersion("3.2");
         comprobante.setNoCertificado("00001000000303180555");
         comprobante.setMetodoDePago(venta.getMetodoPago());
@@ -65,11 +107,10 @@ public class VentaService {
         comprobante.setTotal(venta.getTotal());
         comprobante.setMoneda("PESO MEXICANOS");
 
-
         //ComprobanteInfo
         ComprobanteInfo comprobanteInfo = new ComprobanteInfo();
         comprobanteInfo.setComprobante(comprobante);
-        com.erpsom.domain.Comprobante comprobanteFiscal = new com.erpsom.domain.Comprobante();
+        ComprobanteFiscal comprobanteFiscal = new ComprobanteFiscal();
         comprobanteFiscal.setComprobanteInfo(comprobanteInfo);
 
         try {
@@ -157,6 +198,14 @@ public class VentaService {
         impuestos.setTotalImpuestosTrasladados(venta.getIva());
         return impuestos;
     }
+
+    private Comprobante.Complemento crearComplemento(ObjectFactory objectFactory, Venta venta){
+        Comprobante.Complemento complemento = objectFactory.createComprobanteComplemento();
+        TimbreFiscalDigital timbreFiscalDigital = objectFactory.createTimbreFiscalDigital();
+        timbreFiscalDigital.setFechaTimbrado(new Date());
+        return complemento;
+    }
+
 
     public Venta saveVenta(Venta venta){
         Venta newVenta = ventaRepository.save(venta);

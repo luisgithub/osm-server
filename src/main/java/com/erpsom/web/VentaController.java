@@ -40,7 +40,7 @@ public class VentaController {
 	public ResponseEntity<Object> createVenta(@RequestBody Venta venta, @RequestParam("comprobanteRequerido") boolean comprobanteRequerido){
 		Venta newVenta = ventaService.saveVenta(venta);
 		if(comprobanteRequerido){
-			ventaService.crateComprobante(newVenta);
+			ventaService.crearCFD(newVenta);
 		}
 		return new ResponseEntity<>(newVenta,HttpStatus.CREATED);
 	}

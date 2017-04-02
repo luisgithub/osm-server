@@ -20,7 +20,7 @@ import java.io.Serializable;
         @org.hibernate.annotations.Parameter(name = JSONBUserType.CLASS, value = "com.erpsom.domain.json.ComprobanteInfo")
     }
 )
-public class Comprobante implements Serializable{
+public class ComprobanteFiscal implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -28,7 +28,7 @@ public class Comprobante implements Serializable{
     @Type(type = "jsonb")
     private ComprobanteInfo comprobanteInfo;
 
-    public Comprobante() {
+    public ComprobanteFiscal() {
     }
 
     public Long getId() {
@@ -53,7 +53,7 @@ public class Comprobante implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Comprobante comprobante = (Comprobante) o;
+        ComprobanteFiscal comprobante = (ComprobanteFiscal) o;
 
         if (id != null ? !id.equals(comprobante.id) : comprobante.id != null) return false;
         if (comprobanteInfo != null ? !comprobanteInfo.equals(comprobante.comprobanteInfo) : comprobante.comprobanteInfo != null) return false;
