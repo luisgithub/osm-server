@@ -61,11 +61,11 @@ public class VentaService {
     public void crearCFD(Venta venta) {
         try {
             PrivateKey key = null;
-            key = KeyLoaderFactory.createInstance(KeyLoaderEnumeration.PRIVATE_KEY_LOADER, new FileInputStream("/home/luis/workspace/osm-server/src/main/resources/FIEL/CSD01_AAA010101AAA.key"), keypass).getKey();
+            key = KeyLoaderFactory.createInstance(KeyLoaderEnumeration.PRIVATE_KEY_LOADER, new FileInputStream("/home/luis/workspace/osm-server/src/main/resources/FIEL/CSD_1_OOP120706Q67_20140304_115812.key"), "OOP120706").getKey();
 
             X509Certificate cert = KeyLoaderFactory.createInstance(
                     KeyLoaderEnumeration.PUBLIC_KEY_LOADER,
-                    new FileInputStream(cerFile)
+                    new FileInputStream("/home/luis/workspace/osm-server/src/main/resources/FIEL/00001000000303180555.cer")
             ).getKey();
             CFDv32 cfdi = new CFDv32(createComprobante(venta), "mx.bigdata.sat.cfdi.examples");
             cfdi.addNamespace("http://www.bigdata.mx/cfdi/example", "example");
@@ -139,10 +139,14 @@ public class VentaService {
         emisorUbicacionFiscal.setColonia(sucursal.getColonia());
         emisorUbicacionFiscal.setEstado(sucursal.getEstado());
         emisorUbicacionFiscal.setLocalidad(sucursal.getLocalidad());
-        emisorUbicacionFiscal.setReferencia(sucursal.getReferencia());
+        if(emisorUbicacionFiscal.getReferencia()!=null) {
+            emisorUbicacionFiscal.setReferencia(sucursal.getReferencia());
+        }
         emisorUbicacionFiscal.setMunicipio(sucursal.getMunicipio());
         emisorUbicacionFiscal.setNoExterior(sucursal.getNoExterior());
-        emisorUbicacionFiscal.setNoInterior(sucursal.getNoInterior());
+        if(emisorUbicacionFiscal.getNoInterior()!=null) {
+            emisorUbicacionFiscal.setNoInterior(sucursal.getNoInterior());
+        }
         emisorUbicacionFiscal.setPais(sucursal.getPais());
         emisor.setDomicilioFiscal(emisorUbicacionFiscal);
         return emisor;
@@ -160,12 +164,16 @@ public class VentaService {
 
         receptorUbicacionFiscal.setCalle(domicilioCliente.getCalle());
         receptorUbicacionFiscal.setNoExterior(domicilioCliente.getNoExterior());
-        receptorUbicacionFiscal.setNoInterior(domicilioCliente.getNoInterior());
+        if(receptorUbicacionFiscal.getNoInterior()!=null) {
+            receptorUbicacionFiscal.setNoInterior(domicilioCliente.getNoInterior());
+        }
         receptorUbicacionFiscal.setEstado(domicilioCliente.getEstado());
         receptorUbicacionFiscal.setPais(domicilioCliente.getPais());
         receptorUbicacionFiscal.setColonia(domicilioCliente.getColonia());
         receptorUbicacionFiscal.setCodigoPostal(domicilioCliente.getCodigoPostal());
-        receptorUbicacionFiscal.setReferencia(domicilioCliente.getReferencia());
+        if(domicilioCliente.getReferencia()!=null) {
+            receptorUbicacionFiscal.setReferencia(domicilioCliente.getReferencia());
+        }
         receptor.setDomicilio(receptorUbicacionFiscal);
         return receptor;
     }
@@ -177,9 +185,11 @@ public class VentaService {
             Comprobante.Conceptos.Concepto concepto = objectFactory.createComprobanteConceptosConcepto();
             List<Comprobante.Conceptos.Concepto> conceptoList = conceptos.getConcepto();
             concepto.setCantidad(ventaDetalle.getCantidad());
+            concepto.setUnidad(ventaDetalle.getUnidad());
             concepto.setDescripcion(ventaDetalle.getDescripcion());
             concepto.setValorUnitario(ventaDetalle.getPrecioUnitario());
             concepto.setNoIdentificacion(ventaDetalle.getCodigo());
+            concepto.setImporte(ventaDetalle.getImporte());
             conceptoList.add(concepto);
         }
         return conceptos;

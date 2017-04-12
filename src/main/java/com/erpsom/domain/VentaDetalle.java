@@ -16,6 +16,7 @@ public class VentaDetalle implements Serializable{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     private String codigo;
+    private String unidad;
     private String descripcion;
     private BigDecimal cantidad;
     private BigDecimal precioUnitario;
@@ -97,5 +98,13 @@ public class VentaDetalle implements Serializable{
 
     public void setVenta(Venta venta) {
         this.venta = venta;
+    }
+
+    public String getUnidad() {
+        return unidad;
+    }
+
+    public void setUnidad(String unidad) {
+        this.unidad = unidad;
     }
 }

@@ -38,6 +38,8 @@ public class QVentaDetalle extends EntityPathBase<VentaDetalle> {
 
     public final NumberPath<java.math.BigDecimal> total = createNumber("total", java.math.BigDecimal.class);
 
+    public final StringPath unidad = createString("unidad");
+
     public final QVenta venta;
 
     public QVentaDetalle(String variable) {
