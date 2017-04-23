@@ -15,10 +15,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.util.JAXBSource;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
@@ -63,27 +69,40 @@ public class VentaService {
     @Value("${osm.csd.keypass}")
     private String keypass;
 
+    @Value("${osm.cfd.plantilla.cadenaoriginal}")
+    private String pantillaCadenaOriginal;
+
+    @Value("${osm.cfd.comprobantes}")
+    private String comprobantes;
+
+
+    private String workingDir = null;
+    private String pathToKey = null;
+    private String pathToCer = null;
 
 
     public void crearCFD(Venta venta) {
-        String workingDir = System.getProperty("user.dir");
-        String pathToKey = workingDir+keyFile;
+
+        workingDir = System.getProperty("user.dir");
+        pathToKey = workingDir+keyFile;
+        pathToCer = workingDir+cerFile;
         try {
             PrivateKey key = null;
             key = KeyLoaderFactory.createInstance(KeyLoaderEnumeration.PRIVATE_KEY_LOADER, new FileInputStream(pathToKey), keypass).getKey();
 
             X509Certificate cert = KeyLoaderFactory.createInstance(
                     KeyLoaderEnumeration.PUBLIC_KEY_LOADER,
-                    new FileInputStream(workingDir+cerFile)
+                    new FileInputStream(pathToCer)
             ).getKey();
             CFDv32 cfdi = new CFDv32(createComprobante(venta), "mx.bigdata.sat.cfdi.examples");
             cfdi.addNamespace("http://www.bigdata.mx/cfdi/example", "example");
 
 
             mx.bigdata.sat.cfdi.v32.schema.Comprobante sellado = cfdi.sellarComprobante(key,cert);
-            System.err.println(sellado.getSello());
             cfdi.validar();
             cfdi.verificar();
+            String cadenaOriginal = getCadenaOriginal(sellado, pantillaCadenaOriginal);
+            //Todo: timbrar comprobante fiscal
             cfdi.guardar(System.out);
         }catch(Exception ex){
             logger.debug(ex.getMessage());
@@ -98,11 +117,10 @@ public class VentaService {
         Comprobante comprobante = objectFactory.createComprobante();
         //ComprobanteFiscal
         comprobante.setVersion("3.2");
-        comprobante.setNoCertificado("CERTIFICADO");
+        comprobante.setNoCertificado(getSerieCertificado(pathToCer));
         comprobante.setMetodoDePago(venta.getMetodoPago());
         comprobante.setFolio(venta.getFolio());
         comprobante.setFecha(venta.getFecha());
-        comprobante.setCertificado("String Certificado");
         comprobante.setNumCtaPago("NumCta");
         comprobante.setTipoDeComprobante("ingreso");
         comprobante.setFormaDePago("Pago en una sola exhibición");
@@ -114,7 +132,7 @@ public class VentaService {
         comprobante.setSubTotal(venta.getSubtotal());
         comprobante.setDescuento(venta.getDescuento());
         comprobante.setTotal(venta.getTotal());
-        comprobante.setMoneda("PESO MEXICANOS");
+        comprobante.setMoneda("PESOS MEXICANOS");
 
         //ComprobanteInfo
         ComprobanteInfo comprobanteInfo = new ComprobanteInfo();
@@ -266,5 +284,25 @@ public class VentaService {
             }
         }
         return serie;
+    }
+
+    public String getCadenaOriginal(Comprobante comprobante, String arhivoXSLT){
+        String resultado = "";
+        try{
+            JAXBContext jaxbContext = JAXBContext.newInstance(Comprobante.class);
+            JAXBSource jaxbSource = new JAXBSource(jaxbContext, comprobante);
+            StreamSource streamSourceXSLT = new StreamSource(new File(arhivoXSLT));
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer(streamSourceXSLT);
+            transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");
+            OutputStream outputStream = new ByteArrayOutputStream();
+            transformer.transform(jaxbSource, new StreamResult(outputStream));
+            resultado = new String(((ByteArrayOutputStream)outputStream).toByteArray());
+        }catch(TransformerException e){
+            logger.error("Error aplicando transformer de cadena original: "+e.getMessage());
+        } catch (JAXBException e) {
+            logger.error("Error aplicando transformer de cadena original: "+e.getMessage());
+        }
+        return resultado;
     }
 }

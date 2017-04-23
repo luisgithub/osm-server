@@ -41,6 +41,7 @@ public class VentaController {
 		Venta newVenta = ventaService.saveVenta(venta);
 		if(comprobanteRequerido){
 			ventaService.crearCFD(newVenta);
+			//Todo: timbrar comprobante
 		}
 		return new ResponseEntity<>(newVenta,HttpStatus.CREATED);
 	}
